@@ -13,7 +13,7 @@ public class BulkRequest {
     public static final String SCHEMA = "urn:ietf:params:scim:api:messages:2.0:BulkRequest";
 
     @JsonProperty("schemas")
-    private Set<String> schemas = Set.of(SCHEMA);
+    private Set<String> schemas;
 
     @JsonProperty("failOnErrors")
     private Integer failOnErrors;

@@ -1,7 +1,9 @@
 package org.keycloak.scim.resource.bulk;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -52,6 +54,22 @@ class BulkRequestResponseRepresentationTest {
         assertEquals(null, request.getFailOnErrors());
         assertEquals(null, request.getOperations().get(0).getData());
         assertEquals(null, request.getOperations().get(0).getBulkId());
+    }
+
+    @Test
+    void preservesMissingSchemasForServiceValidation() throws JsonProcessingException {
+        BulkRequest request = objectMapper.readValue("{\"Operations\":[]}", BulkRequest.class);
+
+        assertNull(request.getSchemas());
+    }
+
+    @Test
+    void preservesIncorrectSchemasForServiceValidation() throws JsonProcessingException {
+        BulkRequest request = objectMapper.readValue("{\"schemas\":[\"urn:example:invalid\"],\"Operations\":[]}", BulkRequest.class);
+
+        assertEquals(1, request.getSchemas().size());
+        assertEquals("urn:example:invalid", request.getSchemas().iterator().next());
+        assertFalse(request.getSchemas().contains(BulkRequest.SCHEMA));
     }
 
     @Test
